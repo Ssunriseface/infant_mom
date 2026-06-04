@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors } from './src/theme/colors';
 import { SubscriptionProvider } from './src/contexts/SubscriptionContext';
+import { RecordProvider } from './src/contexts/RecordContext';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RecordsScreen from './src/screens/RecordsScreen';
@@ -83,6 +84,7 @@ function TabIcon({ name, focused, color, size }: {
 export default function App() {
   const content = (
     <SubscriptionProvider>
+      <RecordProvider>
       <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -103,6 +105,7 @@ export default function App() {
         <Tab.Screen name="Profile" component={ProfileStackScreen} options={{ tabBarLabel: '我的' }} />
       </Tab.Navigator>
     </NavigationContainer>
+    </RecordProvider>
     </SubscriptionProvider>
   );
 
