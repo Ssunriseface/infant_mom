@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Colors } from '../theme/colors';
+import { useSubscription } from '../contexts/SubscriptionContext';
 
 const ages = ['4–6 个月', '6–8 个月', '8–10 个月', '10–12 个月', '1–2 岁'];
 
@@ -47,6 +48,7 @@ export default function FeedingToolScreen() {
   const [customText, setCustomText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState<any>(null);
+  const { isExpired } = useSubscription();
 
   const handleGenerate = () => {
     if (isGenerating) return;
@@ -139,7 +141,20 @@ export default function FeedingToolScreen() {
             <View style={styles.generatedLabel}>
               <Text style={styles.generatedLabelText}>✨ AI 为您生成</Text>
             </View>
-            <RecipeCard recipe={generatedRecipe} highlight />
+            {isExpired ? (
+              <View style={styles.paywallOverlay}>
+                <View style={styles.paywallContent}>
+                  <Text style={styles.paywallIcon}>🔒</Text>
+                  <Text style={styles.paywallText}>试用已结束</Text>
+                  <Text style={styles.paywallSub}>开通会员解锁完整 AI 食谱分析</Text>
+                </View>
+                <View style={styles.paywallBlurred}>
+                  <RecipeCard recipe={generatedRecipe} highlight />
+                </View>
+              </View>
+            ) : (
+              <RecipeCard recipe={generatedRecipe} highlight />
+            )}
           </>
         )}
 
@@ -261,4 +276,15 @@ const styles = StyleSheet.create({
   },
   stepNumText: { fontSize: 11, fontWeight: '600', color: Colors.primary },
   stepText: { fontSize: 13, color: '#555', lineHeight: 23, flex: 1 },
+
+  paywallOverlay: { position: 'relative', marginHorizontal: 20, marginBottom: 14 },
+  paywallBlurred: { opacity: 0.25, overflow: 'hidden', borderRadius: 14 },
+  paywallContent: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 14,
+  },
+  paywallIcon: { fontSize: 36, marginBottom: 10 },
+  paywallText: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: 4 },
+  paywallSub: { fontSize: 13, color: Colors.subtext, textAlign: 'center' },
 });
