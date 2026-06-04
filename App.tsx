@@ -5,16 +5,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors } from './src/theme/colors';
+import { SubscriptionProvider } from './src/contexts/SubscriptionContext';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RecordsScreen from './src/screens/RecordsScreen';
 import ConsultScreen from './src/screens/ConsultScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import FeedingToolScreen from './src/screens/FeedingToolScreen';
 import SleepToolScreen from './src/screens/SleepToolScreen';
-import CryToolScreen from './src/screens/CryToolScreen';
 import PoopToolScreen from './src/screens/PoopToolScreen';
 
 const HomeStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeStackScreen() {
@@ -37,14 +40,7 @@ function HomeStackScreen() {
           headerShadowVisible: false,
         }}
       />
-      <HomeStack.Screen
-        name="CryTool" component={CryToolScreen}
-        options={{
-          headerShown: true, headerTitle: '哭声翻译器',
-          headerTintColor: Colors.primary, headerStyle: { backgroundColor: Colors.background },
-          headerShadowVisible: false,
-        }}
-      />
+
       <HomeStack.Screen
         name="PoopTool" component={PoopToolScreen}
         options={{
@@ -57,10 +53,27 @@ function HomeStackScreen() {
   );
 }
 
+function ProfileStackScreen() {
+  return (
+    <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+      <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} />
+      <ProfileStack.Screen
+        name="Settings" component={SettingsScreen}
+        options={{
+          headerShown: true, headerTitle: '设置',
+          headerTintColor: Colors.primary, headerStyle: { backgroundColor: Colors.background },
+          headerShadowVisible: false,
+        }}
+      />
+    </ProfileStack.Navigator>
+  );
+}
+
 const TabIcons: Record<string, { active: string; inactive: string }> = {
   Home:      { active: 'home',        inactive: 'home-outline' },
   Records:   { active: 'document-text',       inactive: 'document-text-outline' },
   Consult:   { active: 'chatbubble-ellipses', inactive: 'chatbubble-ellipses-outline' },
+  Profile:   { active: 'person',              inactive: 'person-outline' },
 };
 
 function TabIcon({ name, focused, color, size }: {
@@ -73,7 +86,8 @@ function TabIcon({ name, focused, color, size }: {
 
 export default function App() {
   const content = (
-    <NavigationContainer>
+    <SubscriptionProvider>
+      <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -90,8 +104,10 @@ export default function App() {
         <Tab.Screen name="Home" component={HomeStackScreen} options={{ tabBarLabel: '首页' }} />
         <Tab.Screen name="Records" component={RecordsScreen} options={{ tabBarLabel: '成长' }} />
         <Tab.Screen name="Consult" component={ConsultScreen} options={{ tabBarLabel: '咨询' }} />
+        <Tab.Screen name="Profile" component={ProfileStackScreen} options={{ tabBarLabel: '我的' }} />
       </Tab.Navigator>
     </NavigationContainer>
+    </SubscriptionProvider>
   );
 
   if (Platform.OS === 'web') {
