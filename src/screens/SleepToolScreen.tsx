@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Colors } from '../theme/colors';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useRecords } from '../contexts/RecordContext';
 
 const sootheSounds = [
   { icon: '🌧', name: '雨声' },
@@ -30,6 +31,7 @@ const moodEmojis = ['😊', '😐', '😢'];
 
 export default function SleepToolScreen() {
   const { isExpired } = useSubscription();
+  const { addSleep } = useRecords();
   const [playing, setPlaying] = useState(0);
   const [isSleeping, setIsSleeping] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -78,6 +80,21 @@ export default function SleepToolScreen() {
     setShowSaveForm(false);
     const h = Math.floor(elapsed / 3600);
     const m = Math.floor((elapsed % 3600) / 60);
+    const now = new Date();
+    const wakeTimeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const startDate = new Date(now.getTime() - elapsed * 1000);
+    const sleepTimeStr = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+    const durationStr = `${h}h${m > 0 ? m + 'm' : ''}`;
+
+    addSleep({
+      date: '昨晚',
+      sleepTime: sleepTimeStr,
+      wakeTime: wakeTimeStr,
+      duration: durationStr,
+      wakes: wakeCount,
+      note: notes.trim() || undefined,
+    });
+
     setSavedMsg(`已保存 · ${h}h ${m}m · 夜醒 ${wakeCount} 次`);
     setElapsed(0);
     setWakeCount(0);

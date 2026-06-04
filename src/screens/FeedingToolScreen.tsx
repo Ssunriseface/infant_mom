@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Colors } from '../theme/colors';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useRecords } from '../contexts/RecordContext';
 
 const ages = ['4–6 个月', '6–8 个月', '8–10 个月', '10–12 个月', '1–2 岁'];
 
@@ -49,6 +50,7 @@ export default function FeedingToolScreen() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState<any>(null);
   const { isExpired } = useSubscription();
+  const { addFeeding } = useRecords();
 
   const handleGenerate = () => {
     if (isGenerating) return;
@@ -153,7 +155,23 @@ export default function FeedingToolScreen() {
                 </View>
               </View>
             ) : (
-              <RecipeCard recipe={generatedRecipe} highlight />
+              <>
+                <RecipeCard recipe={generatedRecipe} highlight />
+                <TouchableOpacity
+                  style={styles.saveRecordBtn}
+                  onPress={() => {
+                    addFeeding({
+                      time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
+                      type: '辅食',
+                      food: generatedRecipe.name,
+                      amount: undefined,
+                      note: generatedRecipe.tag,
+                    });
+                  }}
+                >
+                  <Text style={styles.saveRecordBtnText}>记录为今日辅食</Text>
+                </TouchableOpacity>
+              </>
             )}
           </>
         )}
@@ -287,4 +305,11 @@ const styles = StyleSheet.create({
   paywallIcon: { fontSize: 36, marginBottom: 10 },
   paywallText: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: 4 },
   paywallSub: { fontSize: 13, color: Colors.subtext, textAlign: 'center' },
+
+  saveRecordBtn: {
+    marginHorizontal: 20, marginBottom: 14,
+    paddingVertical: 12, backgroundColor: Colors.ok,
+    borderRadius: 10, alignItems: 'center',
+  },
+  saveRecordBtnText: { fontSize: 14, fontWeight: '600', color: Colors.okText },
 });

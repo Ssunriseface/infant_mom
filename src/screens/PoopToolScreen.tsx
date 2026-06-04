@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Colors } from '../theme/colors';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useRecords } from '../contexts/RecordContext';
 
 const history = [
   { date: '今天', color: '#e8d088', score: '85 分' },
@@ -20,6 +21,7 @@ const history = [
 
 export default function PoopToolScreen() {
   const { isExpired } = useSubscription();
+  const { addPoop } = useRecords();
   const [hasResult, setHasResult] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -110,6 +112,21 @@ export default function PoopToolScreen() {
                 <Text style={styles.resultOk}>性状正常</Text>
               </Text>
               <Text style={styles.resultSub}>金黄色软便，糊状，母乳喂养典型</Text>
+
+              <TouchableOpacity
+                style={styles.saveRecordBtn}
+                onPress={() => {
+                  addPoop({
+                    time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
+                    color: '#e8d088',
+                    colorName: '金黄',
+                    texture: '软',
+                    note: 'AI 分析',
+                  });
+                }}
+              >
+                <Text style={styles.saveRecordBtnText}>保存到记录</Text>
+              </TouchableOpacity>
 
               <TouchableOpacity style={styles.nannyLink} onPress={handleCallNanny}>
                 <Text style={styles.nannyLinkText}>不准？连线月嫂帮你看</Text>
@@ -207,6 +224,14 @@ const styles = StyleSheet.create({
   paywallIcon: { fontSize: 36, marginBottom: 10 },
   paywallText: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: 4 },
   paywallSub: { fontSize: 13, color: Colors.subtext, textAlign: 'center' },
+
+  saveRecordBtn: {
+    marginTop: 12, paddingVertical: 10, backgroundColor: Colors.ok,
+    borderRadius: 10, alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  saveRecordBtnText: { fontSize: 13, fontWeight: '600', color: Colors.okText },
+
   fakeNannyLink: {
     marginTop: 14, paddingVertical: 10, backgroundColor: '#fef9f0',
     borderRadius: 10, alignItems: 'center',
