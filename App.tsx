@@ -59,11 +59,7 @@ function ProfileStackScreen() {
       <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} />
       <ProfileStack.Screen
         name="Settings" component={SettingsScreen}
-        options={{
-          headerShown: true, headerTitle: '设置',
-          headerTintColor: Colors.primary, headerStyle: { backgroundColor: Colors.background },
-          headerShadowVisible: false,
-        }}
+        options={{ headerShown: false }}
       />
     </ProfileStack.Navigator>
   );
