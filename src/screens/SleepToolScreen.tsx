@@ -20,9 +20,9 @@ const sootheSounds = [
 ];
 
 const sleepLogs = [
-  { icon: '🌙', iconBg: Colors.sleep, time: '20:35 入睡', tag: '自主入睡 · 昨晚', ago: '8h前' },
-  { icon: '☀️', iconBg: Colors.feeding, time: '06:15 醒来', tag: '情绪开心', ago: '22h前' },
-  { icon: '☁️', iconBg: Colors.sleep, time: '14:00 午觉', tag: '白天小觉 · 40 分钟', ago: '昨天' },
+  { date: '昨晚 6月2日', sleep: '20:35', wake: '06:15', duration: '9h 40m', wakes: '夜醒 2 次', quality: '良好' },
+  { date: '前天 6月1日', sleep: '21:00', wake: '05:50', duration: '8h 50m', wakes: '夜醒 3 次', quality: '一般' },
+  { date: '5月31日', sleep: '20:10', wake: '06:30', duration: '10h 20m', wakes: '夜醒 1 次', quality: '优秀' },
 ];
 
 const moodEmojis = ['😊', '😐', '😢'];
@@ -185,22 +185,30 @@ export default function SleepToolScreen() {
           <Text style={styles.sectionLabelText}>最近记录</Text>
         </View>
 
-        <View style={styles.logCard}>
-          {sleepLogs.map((log, i) => (
-            <View key={i} style={[styles.logEntry, i < sleepLogs.length - 1 && styles.logEntryBorder]}>
-              <View style={styles.logLeft}>
-                <View style={[styles.logDot, { backgroundColor: log.iconBg }]}>
-                  <Text style={styles.logDotEmoji}>{log.icon}</Text>
-                </View>
-                <View>
-                  <Text style={styles.logTime}>{log.time}</Text>
-                  <Text style={styles.logTag}>{log.tag}</Text>
-                </View>
+        {sleepLogs.map((log, i) => (
+          <View key={i} style={styles.logCard}>
+            <View style={styles.logHeader}>
+              <Text style={styles.logDate}>🌙 {log.date}</Text>
+              <View style={styles.logQuality}>
+                <Text style={styles.logQualityText}>{log.quality}</Text>
               </View>
-              <Text style={styles.logAgo}>{log.ago}</Text>
             </View>
-          ))}
-        </View>
+            <View style={styles.logTimeline}>
+              <View style={styles.logPoint}>
+                <Text style={styles.logPointLabel}>入睡</Text>
+                <Text style={styles.logPointTime}>{log.sleep}</Text>
+              </View>
+              <View style={styles.logLine}>
+                <Text style={styles.logDuration}>{log.duration}</Text>
+              </View>
+              <View style={styles.logPoint}>
+                <Text style={styles.logPointLabel}>醒来</Text>
+                <Text style={styles.logPointTime}>{log.wake}</Text>
+              </View>
+            </View>
+            <Text style={styles.logWakes}>{log.wakes}</Text>
+          </View>
+        ))}
 
         {/* Soothing Sounds */}
         <View style={styles.sectionLabel}>
@@ -312,19 +320,30 @@ const styles = StyleSheet.create({
   sectionLabelText: { fontSize: 13, fontWeight: '600', color: '#888' },
 
   logCard: {
-    marginHorizontal: 20, marginBottom: 14, backgroundColor: Colors.white,
-    borderRadius: 14, paddingHorizontal: 16, paddingVertical: 4,
+    marginHorizontal: 20, marginBottom: 12, backgroundColor: Colors.white,
+    borderRadius: 14, padding: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
-  logEntry: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
-  logEntryBorder: { borderBottomWidth: 1, borderBottomColor: Colors.divider },
-  logLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  logDot: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  logDotEmoji: { fontSize: 14 },
-  logTime: { fontSize: 15, fontWeight: '600', color: Colors.text },
-  logTag: { fontSize: 11, color: Colors.subtext },
-  logAgo: { fontSize: 11, color: '#bbb' },
+  logHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  logDate: { fontSize: 13, fontWeight: '600', color: Colors.text },
+  logQuality: {
+    paddingHorizontal: 10, paddingVertical: 3, borderRadius: 6,
+    backgroundColor: Colors.primaryLight,
+  },
+  logQualityText: { fontSize: 11, fontWeight: '500', color: Colors.primary },
+  logTimeline: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 4, marginBottom: 8,
+  },
+  logPoint: { flex: 1 },
+  logPointLabel: { fontSize: 11, color: '#aaa', marginBottom: 2 },
+  logPointTime: { fontSize: 20, fontWeight: '700', color: Colors.text },
+  logLine: {
+    flex: 2, alignItems: 'center', paddingTop: 14,
+  },
+  logDuration: { fontSize: 12, color: '#888', fontWeight: '500' },
+  logWakes: { fontSize: 12, color: '#999' },
 
   // Soothing
   sootheStrip: { paddingHorizontal: 20, marginBottom: 20 },

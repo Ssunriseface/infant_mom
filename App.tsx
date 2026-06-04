@@ -9,7 +9,6 @@ import { Colors } from './src/theme/colors';
 import HomeScreen from './src/screens/HomeScreen';
 import RecordsScreen from './src/screens/RecordsScreen';
 import ConsultScreen from './src/screens/ConsultScreen';
-import CommunityScreen from './src/screens/CommunityScreen';
 import FeedingToolScreen from './src/screens/FeedingToolScreen';
 import SleepToolScreen from './src/screens/SleepToolScreen';
 import CryToolScreen from './src/screens/CryToolScreen';
@@ -62,7 +61,6 @@ const TabIcons: Record<string, { active: string; inactive: string }> = {
   Home:      { active: 'home',        inactive: 'home-outline' },
   Records:   { active: 'document-text',       inactive: 'document-text-outline' },
   Consult:   { active: 'chatbubble-ellipses', inactive: 'chatbubble-ellipses-outline' },
-  Community: { active: 'people',       inactive: 'people-outline' },
 };
 
 function TabIcon({ name, focused, color, size }: {
@@ -92,7 +90,6 @@ export default function App() {
         <Tab.Screen name="Home" component={HomeStackScreen} options={{ tabBarLabel: '首页' }} />
         <Tab.Screen name="Records" component={RecordsScreen} options={{ tabBarLabel: '成长' }} />
         <Tab.Screen name="Consult" component={ConsultScreen} options={{ tabBarLabel: '咨询' }} />
-        <Tab.Screen name="Community" component={CommunityScreen} options={{ tabBarLabel: '社区' }} />
       </Tab.Navigator>
     </NavigationContainer>
   );

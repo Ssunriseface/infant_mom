@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../theme/colors';
 
 const stats = [
@@ -35,11 +35,16 @@ const stats = [
   },
 ];
 
-export default function StatsSummary() {
+export default function StatsSummary({ onCardPress }: {
+  onCardPress?: (data: typeof stats[number]) => void;
+}) {
   return (
     <View>
       {stats.map((section, i) => (
-        <View key={i} style={styles.card}>
+        <TouchableOpacity
+          key={i} style={styles.card} activeOpacity={0.7}
+          onPress={() => onCardPress?.(section)}
+        >
           <View style={styles.header}>
             <View style={[styles.iconBg, { backgroundColor: section.color }]}>
               <Text style={styles.icon}>{section.icon}</Text>
@@ -53,7 +58,7 @@ export default function StatsSummary() {
               <Text style={styles.value}>{row.value}</Text>
             </View>
           ))}
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );

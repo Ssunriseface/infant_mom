@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Colors } from '../theme/colors';
 import VaccineSchedule from '../components/VaccineSchedule';
+import AiAnalysisModal from '../components/AiAnalysisModal';
 import GrowthChart from '../components/GrowthChart';
 import StatsSummary from '../components/StatsSummary';
 
@@ -9,6 +10,9 @@ const babies = ['小宝 · 6 个月', '姐姐 · 3 岁'];
 
 export default function RecordsScreen() {
   const [activeBaby, setActiveBaby] = useState(0);
+  const [vaccineOpen, setVaccineOpen] = useState(false);
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [analysisVisible, setAnalysisVisible] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -39,24 +43,24 @@ export default function RecordsScreen() {
           ))}
         </ScrollView>
 
-        {/* Vaccine Reminder Card */}
-        <View style={styles.vaccineReminder}>
+        {/* Growth Chart */}
+        <GrowthChart />
+
+        {/* Vaccine Reminder Card — tappable to expand schedule */}
+        <TouchableOpacity
+          style={styles.vaccineReminder}
+          onPress={() => setVaccineOpen(!vaccineOpen)}
+          activeOpacity={0.7}
+        >
           <Text style={styles.reminderIcon}>🔔</Text>
           <View style={styles.reminderContent}>
             <Text style={styles.reminderTitle}>下一次接种提醒</Text>
             <Text style={styles.reminderVaccine}>乙肝③ + A群流脑①</Text>
             <Text style={styles.reminderMeta}>建议月龄: 6 月 · 本周可接种</Text>
           </View>
-        </View>
-
-        {/* Growth Chart */}
-        <GrowthChart />
-
-        {/* Vaccine Schedule */}
-        <View style={styles.sectionLabel}>
-          <Text style={styles.sectionLabelText}>疫苗接种时间表</Text>
-        </View>
-        <VaccineSchedule />
+          <Text style={styles.toggleArrow}>{vaccineOpen ? '▲' : '▼'}</Text>
+        </TouchableOpacity>
+        {vaccineOpen && <VaccineSchedule />}
 
         <View style={{ height: 14 }} />
 
@@ -64,10 +68,21 @@ export default function RecordsScreen() {
         <View style={styles.sectionLabel}>
           <Text style={styles.sectionLabelText}>趋势统计</Text>
         </View>
-        <StatsSummary />
+        <StatsSummary
+          onCardPress={(data) => {
+            setAnalysisData(data);
+            setAnalysisVisible(true);
+          }}
+        />
 
         <View style={{ height: 20 }} />
       </ScrollView>
+
+      <AiAnalysisModal
+        visible={analysisVisible}
+        data={analysisData}
+        onClose={() => setAnalysisVisible(false)}
+      />
     </View>
   );
 }
@@ -110,4 +125,5 @@ const styles = StyleSheet.create({
 
   sectionLabel: { paddingHorizontal: 20, marginBottom: 10 },
   sectionLabelText: { fontSize: 13, fontWeight: '600', color: '#888' },
+  toggleArrow: { fontSize: 12, color: '#b89830' },
 });

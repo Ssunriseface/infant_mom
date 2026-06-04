@@ -123,6 +123,30 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
+        {/* Today's Summary */}
+        <View style={styles.sectionLabel}>
+          <Text style={styles.sectionLabelText}>今日速览</Text>
+        </View>
+
+        <View style={styles.todayStrip}>
+          <View style={styles.todayItem}>
+            <Text style={styles.todayVal}>2 餐</Text>
+            <Text style={styles.todayLbl}>辅食</Text>
+          </View>
+          <View style={styles.todayItem}>
+            <Text style={styles.todayVal}>8.2h</Text>
+            <Text style={styles.todayLbl}>昨夜睡眠</Text>
+          </View>
+          <View style={styles.todayItem}>
+            <Text style={styles.todayVal}>85 分</Text>
+            <Text style={styles.todayLbl}>便便健康</Text>
+          </View>
+          <View style={styles.todayItem}>
+            <Text style={styles.todayVal}>正常</Text>
+            <Text style={styles.todayLbl}>情绪状态</Text>
+          </View>
+        </View>
+
         {/* Feeding Records */}
         <RecordSection
           title="喂养记录"
@@ -153,29 +177,6 @@ export default function HomeScreen({ navigation }: any) {
           ]}
         />
 
-        {/* Today's Summary */}
-        <View style={styles.sectionLabel}>
-          <Text style={styles.sectionLabelText}>今日速览</Text>
-        </View>
-
-        <View style={styles.todayStrip}>
-          <View style={styles.todayItem}>
-            <Text style={styles.todayVal}>2 餐</Text>
-            <Text style={styles.todayLbl}>辅食</Text>
-          </View>
-          <View style={styles.todayItem}>
-            <Text style={styles.todayVal}>8.2h</Text>
-            <Text style={styles.todayLbl}>昨夜睡眠</Text>
-          </View>
-          <View style={styles.todayItem}>
-            <Text style={styles.todayVal}>85 分</Text>
-            <Text style={styles.todayLbl}>便便健康</Text>
-          </View>
-          <View style={styles.todayItem}>
-            <Text style={styles.todayVal}>正常</Text>
-            <Text style={styles.todayLbl}>情绪状态</Text>
-          </View>
-        </View>
       </ScrollView>
 
       <TouchableOpacity
