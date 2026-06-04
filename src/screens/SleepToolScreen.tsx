@@ -10,6 +10,7 @@ import {
   Easing,
 } from 'react-native';
 import { Colors } from '../theme/colors';
+import { useSubscription } from '../contexts/SubscriptionContext';
 
 const sootheSounds = [
   { icon: '🌧', name: '雨声' },
@@ -28,6 +29,7 @@ const sleepLogs = [
 const moodEmojis = ['😊', '😐', '😢'];
 
 export default function SleepToolScreen() {
+  const { isExpired } = useSubscription();
   const [playing, setPlaying] = useState(0);
   const [isSleeping, setIsSleeping] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -102,26 +104,51 @@ export default function SleepToolScreen() {
         )}
 
         {/* Sleep Prediction */}
-        <Animated.View style={[styles.predictCard, { transform: [{ scale: pulseAnim }] }]}>
-          <Text style={styles.predictLabel}>AI 今晚预测</Text>
-          <Text style={styles.predictTime}>预计 20:30 入睡</Text>
-          <Text style={styles.predictDetail}>睡眠约 9.2h · 夜醒 1–2 次 · 建议 20:00 开始哄睡</Text>
-        </Animated.View>
-
-        {/* Action Buttons */}
-        <View style={styles.btnRow}>
-          <TouchableOpacity
-            style={[styles.btn, styles.btnPrimary]}
-            onPress={() => setIsSleeping(!isSleeping)}
-          >
-            <Text style={styles.btnPrimaryText}>
-              {isSleeping ? `记录中... ${formatTime(elapsed)}` : '开始睡眠'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.btn, styles.btnSecondary]}>
-            <Text style={styles.btnSecondaryText}>哄睡辅助</Text>
-          </TouchableOpacity>
-        </View>
+        {isExpired ? (
+          <View style={styles.paywallOverlay}>
+            <View style={styles.paywallContent}>
+              <Text style={styles.paywallIcon}>🔒</Text>
+              <Text style={styles.paywallText}>试用已结束</Text>
+              <Text style={styles.paywallSub}>开通会员解锁 AI 睡眠预测</Text>
+            </View>
+            <View style={styles.paywallBlurred}>
+              <Animated.View style={[styles.predictCard, { transform: [{ scale: pulseAnim }] }]}>
+                <Text style={styles.predictLabel}>AI 今晚预测</Text>
+                <Text style={styles.predictTime}>预计 20:30 入睡</Text>
+                <Text style={styles.predictDetail}>睡眠约 9.2h · 夜醒 1–2 次 · 建议 20:00 开始哄睡</Text>
+              </Animated.View>
+              <View style={styles.btnRow}>
+                <View style={[styles.btn, styles.btnPrimary]}>
+                  <Text style={styles.btnPrimaryText}>开始睡眠</Text>
+                </View>
+                <View style={[styles.btn, styles.btnSecondary]}>
+                  <Text style={styles.btnSecondaryText}>哄睡辅助</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <>
+            <Animated.View style={[styles.predictCard, { transform: [{ scale: pulseAnim }] }]}>
+              <Text style={styles.predictLabel}>AI 今晚预测</Text>
+              <Text style={styles.predictTime}>预计 20:30 入睡</Text>
+              <Text style={styles.predictDetail}>睡眠约 9.2h · 夜醒 1–2 次 · 建议 20:00 开始哄睡</Text>
+            </Animated.View>
+            <View style={styles.btnRow}>
+              <TouchableOpacity
+                style={[styles.btn, styles.btnPrimary]}
+                onPress={() => setIsSleeping(!isSleeping)}
+              >
+                <Text style={styles.btnPrimaryText}>
+                  {isSleeping ? `记录中... ${formatTime(elapsed)}` : '开始睡眠'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.btn, styles.btnSecondary]}>
+                <Text style={styles.btnSecondaryText}>哄睡辅助</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
 
         {/* Sleep Timer */}
         {isSleeping && (
@@ -360,4 +387,15 @@ const styles = StyleSheet.create({
   },
   sootheEmoji: { fontSize: 16 },
   sootheName: { fontSize: 11, color: '#555', fontWeight: '500' },
+
+  paywallOverlay: { marginHorizontal: 20, marginBottom: 14, position: 'relative' },
+  paywallBlurred: { opacity: 0.25, overflow: 'hidden', borderRadius: 14 },
+  paywallContent: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 14,
+  },
+  paywallIcon: { fontSize: 30, marginBottom: 8 },
+  paywallText: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: 4 },
+  paywallSub: { fontSize: 13, color: Colors.subtext, textAlign: 'center' },
 });
