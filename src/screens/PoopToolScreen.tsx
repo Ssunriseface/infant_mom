@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { Colors } from '../theme/colors';
+import { useSubscription } from '../contexts/SubscriptionContext';
 
 const history = [
   { date: '今天', color: '#e8d088', score: '85 分' },
@@ -18,30 +19,16 @@ const history = [
 ];
 
 export default function PoopToolScreen() {
+  const { isExpired } = useSubscription();
   const [hasResult, setHasResult] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [remainingFree, setRemainingFree] = useState(8);
 
   const handleAnalyze = () => {
     if (isAnalyzing) return;
 
-    if (remainingFree <= 0) {
-      Alert.alert(
-        '免费次数已用完',
-        '10 次免费分析已用完。开通睡眠助手会员（¥9.9/月）即可无限次使用便便分析。',
-        [
-          { text: '稍后再说', style: 'cancel' },
-          { text: '开通会员', onPress: () => Alert.alert('提示', '即将跳转会员开通页面...') },
-        ]
-      );
-      return;
-    }
-
     setIsAnalyzing(true);
     setHasResult(false);
-    setRemainingFree((r) => r - 1);
 
-    // Simulate AI analysis delay
     setTimeout(() => {
       setIsAnalyzing(false);
       setHasResult(true);
@@ -84,29 +71,51 @@ export default function PoopToolScreen() {
           )}
         </TouchableOpacity>
 
-        {/* Free Remaining */}
-        <View style={styles.freeBadge}>
-          <Text style={styles.freeBadgeText}>剩余免费次数：{remainingFree} 次</Text>
-        </View>
-
         {/* Result */}
         {hasResult && !isAnalyzing && (
-          <View style={styles.resultCard}>
-            <View style={styles.scoreCircle}>
-              <Text style={styles.scoreNum}>85</Text>
-              <Text style={styles.scoreLabel}>健康分</Text>
+          isExpired ? (
+            <View style={styles.paywallOverlay}>
+              <View style={styles.paywallContent}>
+                <Text style={styles.paywallIcon}>🔒</Text>
+                <Text style={styles.paywallText}>试用已结束</Text>
+                <Text style={styles.paywallSub}>开通会员解锁完整 AI 分析结果</Text>
+              </View>
+              <View style={styles.paywallBlurred}>
+                <View style={styles.resultCard}>
+                  <View style={styles.scoreCircle}>
+                    <Text style={styles.scoreNum}>85</Text>
+                    <Text style={styles.scoreLabel}>健康分</Text>
+                  </View>
+                  <Text style={styles.resultDetail}>
+                    <Text style={styles.resultOk}>颜色正常</Text>
+                    {' · '}
+                    <Text style={styles.resultOk}>性状正常</Text>
+                  </Text>
+                  <Text style={styles.resultSub}>金黄色软便，糊状，母乳喂养典型</Text>
+                  <View style={styles.fakeNannyLink}>
+                    <Text style={styles.nannyLinkText}>不准？连线月嫂帮你看</Text>
+                  </View>
+                </View>
+              </View>
             </View>
-            <Text style={styles.resultDetail}>
-              <Text style={styles.resultOk}>颜色正常</Text>
-              {' · '}
-              <Text style={styles.resultOk}>性状正常</Text>
-            </Text>
-            <Text style={styles.resultSub}>金黄色软便，糊状，母乳喂养典型</Text>
+          ) : (
+            <View style={styles.resultCard}>
+              <View style={styles.scoreCircle}>
+                <Text style={styles.scoreNum}>85</Text>
+                <Text style={styles.scoreLabel}>健康分</Text>
+              </View>
+              <Text style={styles.resultDetail}>
+                <Text style={styles.resultOk}>颜色正常</Text>
+                {' · '}
+                <Text style={styles.resultOk}>性状正常</Text>
+              </Text>
+              <Text style={styles.resultSub}>金黄色软便，糊状，母乳喂养典型</Text>
 
-            <TouchableOpacity style={styles.nannyLink} onPress={handleCallNanny}>
-              <Text style={styles.nannyLinkText}>不准？连线月嫂帮你看</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity style={styles.nannyLink} onPress={handleCallNanny}>
+                <Text style={styles.nannyLinkText}>不准？连线月嫂帮你看</Text>
+              </TouchableOpacity>
+            </View>
+          )
         )}
 
         {/* History */}
@@ -129,29 +138,6 @@ export default function PoopToolScreen() {
           ))}
         </ScrollView>
 
-        {/* Upgrade prompt */}
-        {remainingFree <= 3 && remainingFree > 0 && (
-          <View style={styles.upgradeCard}>
-            <Text style={styles.upgradeText}>
-              仅剩 {remainingFree} 次免费分析 · 开通睡眠会员无限次使用
-            </Text>
-            <TouchableOpacity style={styles.upgradeBtn}>
-              <Text style={styles.upgradeBtnText}>¥9.9/月 立即开通</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {remainingFree <= 0 && (
-          <View style={styles.upgradeCard}>
-            <Text style={styles.upgradeText}>
-              免费次数已用完 · 开通睡眠会员即可无限使用
-            </Text>
-            <TouchableOpacity style={styles.upgradeBtn}>
-              <Text style={styles.upgradeBtnText}>¥9.9/月 立即开通</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         <View style={{ height: 20 }} />
       </ScrollView>
     </View>
@@ -172,13 +158,6 @@ const styles = StyleSheet.create({
   uploadIcon: { fontSize: 36, marginBottom: 8, opacity: 0.6 },
   uploadText: { fontSize: 14, color: '#888', fontWeight: '500' },
   uploadHint: { fontSize: 11, color: '#bbb', marginTop: 4 },
-
-  freeBadge: {
-    marginHorizontal: 20, marginBottom: 18,
-    backgroundColor: Colors.primaryLight, borderRadius: 8,
-    paddingVertical: 6, alignItems: 'center',
-  },
-  freeBadgeText: { fontSize: 12, color: Colors.primary, fontWeight: '500' },
 
   resultCard: {
     marginHorizontal: 20, marginBottom: 18, backgroundColor: Colors.white,
@@ -218,15 +197,19 @@ const styles = StyleSheet.create({
   historyColor: { width: 28, height: 28, borderRadius: 14, marginVertical: 6 },
   historyScore: { fontSize: 13, fontWeight: '600', color: Colors.text },
 
-  upgradeCard: {
-    marginHorizontal: 20, backgroundColor: '#fef9f0',
-    borderRadius: 12, padding: 14, alignItems: 'center',
-    borderWidth: 1, borderColor: '#f0dcc0',
+  paywallOverlay: { marginHorizontal: 20, marginBottom: 18, position: 'relative' },
+  paywallBlurred: { opacity: 0.25, overflow: 'hidden', borderRadius: 14 },
+  paywallContent: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 14,
   },
-  upgradeText: { fontSize: 12, color: '#6b4e30', marginBottom: 10, textAlign: 'center' },
-  upgradeBtn: {
-    backgroundColor: Colors.primary, borderRadius: 10,
-    paddingVertical: 10, paddingHorizontal: 24,
+  paywallIcon: { fontSize: 36, marginBottom: 10 },
+  paywallText: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: 4 },
+  paywallSub: { fontSize: 13, color: Colors.subtext, textAlign: 'center' },
+  fakeNannyLink: {
+    marginTop: 14, paddingVertical: 10, backgroundColor: '#fef9f0',
+    borderRadius: 10, alignItems: 'center',
+    borderWidth: 1, borderColor: '#f0dcc0', paddingHorizontal: 24,
   },
-  upgradeBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
 });
