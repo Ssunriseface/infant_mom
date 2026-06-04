@@ -22,4 +22,8 @@ export const Colors = {
   okText: '#5b8a40',
   warn: '#fef7e6',
   warnText: '#b89830',
+
+  // 会员/订阅
+  memberGold: '#d4a853',
+  memberGoldLight: '#fdf6e8',
 };
